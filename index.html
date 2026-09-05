@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05070b" />
+    <title>THE MAZE // SIGNAL NULL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <canvas id="game-canvas"></canvas>
+
+    <main id="title-screen">
+      <div class="menu-noise"></div>
+      <div class="menu-shell">
+        <div class="brandline"><span class="signal-dot"></span> FIELD RECORDING 07 / NIGHT SHIFT</div>
+        <div class="title-lockup">
+          <div class="title-kicker">THE LAST EXIT IS BEYOND THE SIGNAL</div>
+          <h1>THE<br /><em>MAZE</em></h1>
+          <div class="title-rule"><span></span><b>SIGNAL NULL</b><span></span></div>
+        </div>
+        <div class="menu-actions">
+          <button class="game-btn primary" id="start-btn"><span class="btn-index">01</span> ENTER THE MAZE <span class="btn-arrow">-></span></button>
+          <div class="menu-meta"><span>81 x 81 SECTOR GRID</span><span>NO BACKUP SIGNAL</span></div>
+        </div>
+        <div class="controls-panel">
+          <div><b>W A S D</b><span>MOVE</span></div>
+          <div><b>MOUSE</b><span>LOOK</span></div>
+          <div><b>F</b><span>FLASHLIGHT</span></div>
+          <div><b>SHIFT</b><span>SPRINT</span></div>
+          <div><b>SPACE</b><span>JUMP</span></div>
+          <div><b>M</b><span>MAP</span></div>
+        </div>
+      </div>
+      <div class="menu-footer"><span>BUILD 2.0.7 / REMASTERED</span><span>HEADPHONES RECOMMENDED</span></div>
+    </main>
+
+    <section id="overlay-screen" aria-live="polite"></section>
+
+    <section id="map-screen" aria-label="Maze map" aria-hidden="true">
+      <div class="map-card">
+        <div class="map-header"><span><span class="signal-dot"></span> RECOVERED NAVIGATION SCHEMATIC</span><b>MAP // LIVE ROUTE</b></div>
+        <canvas id="map-canvas" width="486" height="486"></canvas>
+        <div class="map-footer"><span><i class="map-key player-key"></i> YOU</span><span><i class="map-key route-key"></i> EXIT ROUTE</span><span><i class="map-key exit-key"></i> EXIT</span><strong>PRESS M TO CLOSE</strong></div>
+      </div>
+    </section>
+
+    <section id="hud" aria-label="Game telemetry">
+      <div class="hud-topline">
+        <div class="hud-brand"><span class="signal-dot"></span> SIGNAL NULL <span class="hud-divider">/</span> LIVE FEED</div>
+        <div class="hud-readouts"><span id="heading">HEADING 000</span><span id="depth">EXIT DIST --</span></div>
+      </div>
+      <div id="objective" class="hud-objective"><span class="objective-marker">+</span><div><small>PRIMARY OBJECTIVE</small><strong>LOCATE THE SURFACE EXIT</strong></div></div>
+      <div id="proximity">PROXIMITY ALERT <span>///</span> IT IS CLOSE</div>
+      <div class="hud-bottomline">
+        <div id="status" class="status">AUDIO STANDBY</div>
+        <div class="threat-readout"><span>THREAT</span><strong id="threat-readout">LOW</strong><div class="meter"><i id="threat-fill"></i></div></div>
+        <div id="battery-wrap" class="battery"><span>FLASHLIGHT</span><div class="meter"><i id="battery-fill"></i></div><strong id="battery-pct">100%</strong></div>
+      </div>
+    </section>
+
+    <div id="compass" class="compass-widget" aria-label="Compass">
+      <div class="compass-label"><span class="signal-dot"></span> NAV // HEADING</div>
+      <div class="compass-dial">
+        <div class="compass-face" aria-hidden="true">
+          <span class="compass-cardinal compass-north">N</span>
+          <span class="compass-cardinal compass-east">E</span>
+          <span class="compass-cardinal compass-south">S</span>
+          <span class="compass-cardinal compass-west">W</span>
+          <span class="compass-tick tick-1"></span><span class="compass-tick tick-2"></span>
+          <span class="compass-tick tick-3"></span><span class="compass-tick tick-4"></span>
+        </div>
+        <span class="compass-marker" aria-hidden="true"></span>
+      </div>
+      <div id="compass-value" class="compass-value">000°</div>
+    </div>
+
+    <div id="crosshair" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="flash" aria-hidden="true"></div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/": "https://unpkg.com/three@0.160.0/"
+        }
+      }
+    </script>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
