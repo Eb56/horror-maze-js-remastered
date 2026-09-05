@@ -11,6 +11,9 @@ npm run dev
 
 Open the local URL printed by Vite. The game must be served over HTTP so module imports and the GLB/audio assets load correctly.
 
+## Or play at with this link.
+https://eb56.github.io/horror-maze-js-remastered/
+
 ## Controls
 
 - `WASD` Move
