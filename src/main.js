@@ -31,7 +31,6 @@ let wasGrounded = true;
 let elapsed = 0;
 let bobTime = 0;
 let landingKick = 0;
-let headbobPitch = 0;
 let hudRefreshTimer = 0;
 let mapSpawnTimer = null;
 let mapRetryTimer = null;
@@ -74,6 +73,7 @@ const ui = {
   threatFill: document.querySelector('#threat-fill'),
   threatReadout: document.querySelector('#threat-readout'),
   heading: document.querySelector('#heading'),
+  depth: document.querySelector('#depth'),
   compass: document.querySelector('#compass'),
   compassValue: document.querySelector('#compass-value'),
   mapScreen: document.querySelector('#map-screen'),
@@ -86,6 +86,7 @@ scene.background = new THREE.Color(0x020306);
 scene.fog = new THREE.FogExp2(0x020306, 0.018);
 
 const camera = new THREE.PerspectiveCamera(78, window.innerWidth / window.innerHeight, 0.1, 420);
+camera.rotation.order = 'YXZ';
 camera.position.set(3, PLAYER_HEIGHT, 3);
 
 const renderer = new THREE.WebGLRenderer({
@@ -768,7 +769,6 @@ function startGame() {
   wasGrounded = true;
   bobTime = 0;
   landingKick = 0;
-  headbobPitch = 0;
   clearKeys();
   isGrounded = true;
   battery = 100;
@@ -882,28 +882,34 @@ function updatePlayer(delta) {
   }
 }
 
+// Keeps the view from ever pitching past vertical and flipping over.
+const MAX_LOOK_PITCH = Math.PI / 2 - 0.04;
+
+function clampCameraPitch() {
+  const pitch = camera.rotation.x;
+  if (pitch > MAX_LOOK_PITCH) camera.rotation.x = MAX_LOOK_PITCH;
+  else if (pitch < -MAX_LOOK_PITCH) camera.rotation.x = -MAX_LOOK_PITCH;
+}
+
 function updateCameraMotion(delta) {
+  clampCameraPitch();
   const horizontalSpeed = Math.hypot(velocity.x, velocity.z);
   const moving = isGrounded && horizontalSpeed > 0.35;
   const sprinting = keys.ShiftLeft || keys.ShiftRight;
-  const bobFrequency = sprinting ? 12 : 9;
-  const bobAmount = sprinting ? 0.052 : 0.034;
+  const bobFrequency = sprinting ? 11 : 8.6;
+  const bobAmount = sprinting ? 0.05 : 0.032;
 
   if (moving) bobTime += delta * bobFrequency;
-  else bobTime = THREE.MathUtils.damp(bobTime, Math.round(bobTime / Math.PI) * Math.PI, 10, delta);
-  landingKick = THREE.MathUtils.damp(landingKick, 0, 10, delta);
+  else bobTime = THREE.MathUtils.damp(bobTime, Math.round(bobTime / (Math.PI * 2)) * (Math.PI * 2), 12, delta);
+  landingKick = THREE.MathUtils.damp(landingKick, 0, 9, delta);
 
   const bobFade = moving ? Math.min(1, horizontalSpeed / (sprinting ? 8.8 : 5.2)) : 0;
-  const bobX = Math.cos(bobTime * 0.5) * bobAmount * 0.45 * bobFade;
-  const bobY = Math.abs(Math.sin(bobTime)) * bobAmount * bobFade - landingKick;
-  const nextHeadbobPitch = Math.sin(bobTime * 0.5) * 0.0018 * bobFade;
-  camera.rotation.x -= headbobPitch;
-  camera.rotation.x += nextHeadbobPitch;
-  headbobPitch = nextHeadbobPitch;
+  // Position-only head-bob: PointerLockControls exclusively owns camera orientation.
+  const bobY = Math.sin(bobTime) * bobAmount * bobFade - landingKick;
+  const bobX = Math.cos(bobTime) * bobAmount * 0.4 * bobFade;
   camera.position.x = cameraBasePosition.x + bobX;
   camera.position.y = cameraBasePosition.y + bobY;
   camera.position.z = cameraBasePosition.z;
-  camera.rotation.z = THREE.MathUtils.damp(camera.rotation.z, -bobX * 0.22, 8, delta);
 }
 
 function updateFlashlight(delta) {
